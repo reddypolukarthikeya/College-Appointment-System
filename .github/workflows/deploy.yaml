@@ -22,14 +22,14 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      # Step 3: Set up SSH key  
+      # Step 3: Set up SSH key
       - name: Set up SSH key
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.EC2_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
-      # Step 4: SSH into EC2 and deploy the application 
+      # Step 4: SSH into EC2 and deploy the application
       - name: SSH into EC2 and deploy code
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
@@ -40,19 +40,19 @@ jobs:
             mkdir -p ~/test/my-app
             cd ~/test/my-app
 
-           # Clone the repository if it doesn't exist
+            # Clone the repository if it doesn't exist
             if [ ! -d ".git" ]; then
               git clone https://github.com/reddypolukarthikeya/Testt.git .
             fi
-
 
             # Pull the latest changes from the main branch
             git fetch origin main
             git reset --hard origin/main
 
             # Install Node.js dependencies
-            npm install audit --force
+            npm install --production
 
             # Start or restart the Node.js application using PM2
-            npm run dev
+            pm2 start index.js --name "my-app" || pm2 restart "my-app"
+            pm2 save
           EOF

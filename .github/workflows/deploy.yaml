@@ -1,0 +1,69 @@
+name: Deploy to AWS EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Step 2: Set up AWS CLI credentials
+      - name: Set up AWS CLI
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # Step 3: Set up SSH key  
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      # Step 4: SSH into EC2 and deploy the application
+      - name: SSH into EC2 and deploy code
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
+            # Enable debug mode to trace commands
+            set -x
+
+            # Navigate to the application directory or create it
+            mkdir -p ~/my-app
+            cd ~/my-app
+
+           # Clone the repository if it doesn't exist
+            if [ ! -d ".git" ]; then
+              git clone https://github.com/reddypolukarthikeya/StudentProfessorAppointmentSystem.git .
+            fi
+
+
+            # Pull the latest changes from the main branch
+            git fetch origin main
+            git reset --hard origin/main
+
+            # Install Node.js dependencies
+            npm install audit --force
+
+            # Install PM2 globally if not installed
+            npm install -g pm2
+
+            # Start or restart the Node.js application using PM2
+            pm2 start server.js --name appointment-server
+            pm2 save
+          EOF
+
+      # Step 5: Verify Deployment Status
+      - name: Verify Deployment
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
+            pm2 list
+          EOF

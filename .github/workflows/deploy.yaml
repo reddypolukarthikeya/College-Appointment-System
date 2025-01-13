@@ -37,8 +37,8 @@ jobs:
             set -x
 
             # Navigate to the application directory or create it
-            mkdir -p ~/my-app
-            cd ~/my-app
+            mkdir -p ~/test/my-app
+            cd ~/test/my-app
 
            # Clone the repository if it doesn't exist
             if [ ! -d ".git" ]; then

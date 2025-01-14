@@ -51,6 +51,9 @@ jobs:
 
             # Install Node.js dependencies
             npm install --production
+            npm install bcryptjs
+            npm audit fix --force
+
 
             # Start or re  start the Node.js application using PM2 
             pm2 start index.js --name "my-app" --watch --env production -f || pm2 restart "my-app"

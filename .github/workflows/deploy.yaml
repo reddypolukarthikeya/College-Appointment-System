@@ -52,7 +52,7 @@ jobs:
             # Install Node.js dependencies
             npm install --production
 
-            # Start or restart the Node.js application using PM2
-            pm2 start index.js --name "my-app" || pm2 restart "my-app"
+            # Start or re  start the Node.js application using PM2
+            pm2 start index.js --name "my-app" --watch --env production || pm2 restart "my-app"
             pm2 save
           EOF

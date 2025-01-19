@@ -37,7 +37,6 @@ jobs:
             set -x
 
             # Navigate to the application directory or create it
-            mkdir -p ~/test/my-app
             cd /home/CollegeAppointmentSytem/collegeAppointment
 
             # Clone the repository if it doesn't exist

@@ -54,7 +54,7 @@ jobs:
             npm audit fix --force
 
 
-            # Manage the Node.js application using PM2
+            # Manage the Node.js application using PM2 
             if pm2 describe "my-app" > /dev/null; then
               pm2 restart "my-app"
             else

@@ -36,7 +36,7 @@ jobs:
             # Enable debug mode to trace commands
             set -x
 
-            # Navigate to the application directory or create it
+            # Navigate to the application  directory or create it
             cd /home/CollegeAppointmentSytem/collegeAppointment
 
             # Clone the repository if it doesn't exist
